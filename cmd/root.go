@@ -6,9 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version = "dev"
+
 var rootCmd = &cobra.Command{
-	Use:   "lab-userctl",
-	Short: "Set up Linux users on lab servers",
+	Use:     "lab-userctl",
+	Short:   "Set up Linux users on lab servers",
+	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Help()
 	},
