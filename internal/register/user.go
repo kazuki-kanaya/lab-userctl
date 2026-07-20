@@ -13,13 +13,9 @@ var usernamePattern = regexp.MustCompile(
 )
 
 func (s *Service) resolveUser() (*account.User, error) {
-	username, err := s.prompt.Ask("Username: ")
+	username, err := s.askUsername()
 	if err != nil {
-		return nil, fmt.Errorf("read username: %w", err)
-	}
-
-	if !usernamePattern.MatchString(username) {
-		return nil, fmt.Errorf("invalid username: %q", username)
+		return nil, err
 	}
 
 	user, err := account.Lookup(username)
@@ -32,21 +28,11 @@ func (s *Service) resolveUser() (*account.User, error) {
 		return user, nil
 	}
 
-	password, err := s.prompt.AskPassword("Password: ")
+	password, err := s.askNewPassword()
 	if err != nil {
-		return nil, fmt.Errorf("read password: %w", err)
+		return nil, err
 	}
 	defer clear(password)
-
-	confirmation, err := s.prompt.AskPassword("Confirm password: ")
-	if err != nil {
-		return nil, fmt.Errorf("read password confirmation: %w", err)
-	}
-	defer clear(confirmation)
-
-	if !bytes.Equal(password, confirmation) {
-		return nil, fmt.Errorf("passwords do not match")
-	}
 
 	user, err = account.Create(username, password)
 	if err != nil {
@@ -55,6 +41,53 @@ func (s *Service) resolveUser() (*account.User, error) {
 
 	fmt.Printf("Created user: %s\n", user.Username)
 	return user, nil
+}
+
+func (s *Service) askUsername() (string, error) {
+	for {
+		username, err := s.prompt.Ask("Username: ")
+		if err != nil {
+			return "", fmt.Errorf("read username: %w", err)
+		}
+
+		if usernamePattern.MatchString(username) {
+			return username, nil
+		}
+
+		fmt.Println(
+			"Invalid username. Use lowercase letters, numbers, _ or -.",
+		)
+	}
+}
+
+func (s *Service) askNewPassword() ([]byte, error) {
+	for {
+		password, err := s.prompt.AskPassword("Password: ")
+		if err != nil {
+			return nil, fmt.Errorf("read password: %w", err)
+		}
+
+		if err := account.ValidatePassword(password); err != nil {
+			clear(password)
+			fmt.Println(err)
+			continue
+		}
+
+		confirmation, err := s.prompt.AskPassword("Confirm password: ")
+		if err != nil {
+			clear(password)
+			return nil, fmt.Errorf("read password confirmation: %w", err)
+		}
+
+		if bytes.Equal(password, confirmation) {
+			clear(confirmation)
+			return password, nil
+		}
+
+		clear(password)
+		clear(confirmation)
+		fmt.Println("Passwords do not match. Please try again.")
+	}
 }
 
 func (s *Service) configureSudo(user *account.User) error {
