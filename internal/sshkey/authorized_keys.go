@@ -46,7 +46,7 @@ func Add(user *account.User, key PublicKey) (added bool, err error) {
 	}
 	defer unix.Close(sshFD)
 
-	keysFD, err := openOrCrateAuthorizedKeys(
+	keysFD, err := openOrCreateAuthorizedKeys(
 		sshFD,
 		user.UID,
 		user.GID,
@@ -192,7 +192,7 @@ func openOrCreateSSHDir(
 	return sshFD, nil
 }
 
-func openOrCrateAuthorizedKeys(
+func openOrCreateAuthorizedKeys(
 	sshFD int,
 	uid int,
 	gid int,

@@ -25,7 +25,7 @@ var usernamePattern = regexp.MustCompile(
 )
 
 func (s *Service) Run() error {
-	username, err := s.prompt.Ask("")
+	username, err := s.prompt.Ask("Username: ")
 	if err != nil {
 		return fmt.Errorf("read username: %w", err)
 	}
