@@ -186,3 +186,39 @@ func openOrCreateSSHDir(
 
 	return sshFD, nil
 }
+
+func openOrCrateAuthorizedKeys(
+	sshFD int,
+	uid int,
+	gid int,
+) (int, error) {
+	keysFD, err := unix.Openat(
+		sshFD,
+		"authorized_keys",
+		unix.O_RDWR|
+			unix.O_APPEND|
+			unix.O_CREAT|
+			unix.O_NOFOLLOW,
+		0o600,
+	)
+	if err != nil {
+		return -1, fmt.Errorf("open authorized_keys: %w", err)
+	}
+	if err := unix.Fchown(keysFD, uid, gid); err != nil {
+		unix.Close(keysFD)
+		return -1, fmt.Errorf(
+			"set authorized_keys owner: %w",
+			err,
+		)
+	}
+
+	if err := unix.Fchmod(keysFD, 0o600); err != nil {
+		unix.Close(keysFD)
+		return -1, fmt.Errorf(
+			"set authorized_keys permissions: %w",
+			err,
+		)
+	}
+
+	return keysFD, nil
+}
