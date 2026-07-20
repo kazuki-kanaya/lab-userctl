@@ -1,5 +1,7 @@
 # lab-userctl
 
+![Platform: Ubuntu](https://img.shields.io/badge/platform-Ubuntu-E95420?logo=ubuntu&logoColor=white)
+
 [日本語版](README.ja.md)
 
 A simple interactive CLI for provisioning local Linux users on Ubuntu servers.
@@ -28,6 +30,16 @@ sudo lab-userctl register
 The command interactively asks for a username, a password when creating a user, whether to grant sudo access, and whether to register an SSH public key.
 
 Only SSH public keys are accepted. Never enter a private key; private key input is rejected.
+
+## Install
+
+Install the latest Linux release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazuki-kanaya/lab-userctl/main/scripts/install.sh | sh
+```
+
+The installer verifies the downloaded archive against its published SHA-256 checksum and installs `lab-userctl` to `/usr/local/bin`.
 
 ## Build
 
