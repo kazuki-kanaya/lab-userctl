@@ -3,6 +3,7 @@ package sshkey
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -140,4 +141,48 @@ func authorizedKeyLine(key PublicKey) string {
 	}
 
 	return line + " " + key.comment + "\n"
+}
+
+func openOrCreateSSHDir(
+	homeFD int,
+	uid int,
+	gid int,
+) (int, error) {
+	sshFD, err := unix.Openat(
+		homeFD,
+		".ssh",
+		unix.O_RDONLY|
+			unix.O_DIRECTORY|
+			unix.O_CLOEXEC|
+			unix.O_NOFOLLOW,
+		0,
+	)
+	if err != nil {
+		if !errors.Is(err, unix.ENOENT) {
+			return -1, fmt.Errorf("open .ssh directory: %w", err)
+		}
+
+		if err := unix.Mkdirat(homeFD, ".ssh", 0o700); err != nil && !errors.Is(err, unix.EEXIST) {
+			return -1, fmt.Errorf("create .ssh directory: %w", err)
+		}
+
+		sshFD, err = unix.Openat(
+			homeFD,
+			".ssh",
+			unix.O_RDONLY|
+				unix.O_DIRECTORY|
+				unix.O_CLOEXEC|
+				unix.O_NOFOLLOW,
+			0,
+		)
+		if err != nil {
+			return -1, fmt.Errorf("open .ssh owner: %w", err)
+		}
+	}
+	if err := unix.Fchmod(sshFD, 0o700); err != nil {
+		unix.Close(sshFD)
+		return -1, fmt.Errorf("set .ssh permission")
+	}
+
+	return sshFD, nil
 }
