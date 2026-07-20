@@ -26,7 +26,7 @@ func Parse(input string) (PublicKey, error) {
 		)
 	}
 
-	key, comment, options, _, err := ssh.ParseAuthorizedKey([]byte(input))
+	key, comment, options, rest, err := ssh.ParseAuthorizedKey([]byte(input))
 	if err != nil {
 		return PublicKey{}, fmt.Errorf(
 			"parse SSH public key: %w",
@@ -36,7 +36,13 @@ func Parse(input string) (PublicKey, error) {
 
 	if len(options) > 0 {
 		return PublicKey{}, fmt.Errorf(
-			"provided exactly one public key",
+			"authorized key options are not supported",
+		)
+	}
+
+	if len(bytes.TrimSpace(rest)) > 0 {
+		return PublicKey{}, fmt.Errorf(
+			"provide exactly one public key",
 		)
 	}
 

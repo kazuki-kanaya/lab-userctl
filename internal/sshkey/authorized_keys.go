@@ -179,6 +179,11 @@ func openOrCreateSSHDir(
 			return -1, fmt.Errorf("open .ssh owner: %w", err)
 		}
 	}
+	if err := unix.Fchown(sshFD, uid, gid); err != nil {
+		unix.Close(sshFD)
+		return -1, fmt.Errorf("set .ssh owner: %w", err)
+	}
+
 	if err := unix.Fchmod(sshFD, 0o700); err != nil {
 		unix.Close(sshFD)
 		return -1, fmt.Errorf("set .ssh permission")
