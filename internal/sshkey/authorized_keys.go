@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/kazuki-kanaya/lab-userctl/internal/account"
 	"golang.org/x/crypto/ssh"
@@ -126,4 +127,17 @@ func containsPublicKey(
 	}
 
 	return false, nil
+}
+
+func authorizedKeyLine(key PublicKey) string {
+	line := strings.TrimSuffix(
+		string(ssh.MarshalAuthorizedKey(key.key)),
+		"\n",
+	)
+
+	if key.comment == "" {
+		return line + "\n"
+	}
+
+	return line + " " + key.comment + "\n"
 }
