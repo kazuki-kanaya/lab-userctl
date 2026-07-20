@@ -1,0 +1,40 @@
+# lab-userctl
+
+[日本語版](README.ja.md)
+
+A simple interactive CLI for provisioning local Linux users on Ubuntu servers.
+
+## Why
+
+This tool started as a way to remove repetitive account setup work on a lab GPU server: creating users, granting sudo access, registering SSH public keys, and setting the required ownership and permissions.
+
+## What it does
+
+With a single command, it can perform the following account setup tasks:
+
+- Creates a local user when needed
+- Sets a password for new users
+- Optionally grants sudo access
+- Optionally registers an SSH public key
+- Applies secure permissions to `.ssh` and `authorized_keys`
+- Avoids duplicate SSH public keys
+
+## Usage
+
+```bash
+sudo lab-userctl register
+```
+
+The command interactively asks for a username, a password when creating a user, whether to grant sudo access, and whether to register an SSH public key.
+
+Only SSH public keys are accepted. Never enter a private key; private key input is rejected.
+
+## Build
+
+```bash
+goenv install 1.26.5
+goenv use 1.26.5
+go build -o lab-userctl .
+```
+
+This tool changes system accounts. Test it on a disposable Ubuntu VM or test account before using it on a production server.
