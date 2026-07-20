@@ -1,0 +1,29 @@
+version: 2
+
+project_name: lab-userctl
+
+builds:
+  - id: lab-userctl
+    main: .
+    binary: lab-userctl
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X github.com/kazuki-kanaya/lab-userctl/cmd.version={{ .Version }}
+
+archives:
+  - id: default
+    ids:
+      - lab-userctl
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - none*
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256

@@ -1,5 +1,7 @@
 # lab-userctl
 
+![Platform: Ubuntu](https://img.shields.io/badge/platform-Ubuntu-E95420?logo=ubuntu&logoColor=white)
+
 [English README](README.md)
 
 Ubuntuサーバー上のローカルLinuxユーザーを、対話形式で登録するシンプルなCLIツールです。
@@ -30,6 +32,16 @@ sudo lab-userctl register
 ユーザー名、新規作成時のパスワード、sudo権限の付与、SSH公開鍵の登録を対話形式で確認します。
 
 受け付けるのはSSH公開鍵だけです。秘密鍵は絶対に入力しないでください。秘密鍵を入力するとエラーになります。
+
+## インストール
+
+最新のLinux向けリリースをインストールします。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazuki-kanaya/lab-userctl/main/scripts/install.sh | sh
+```
+
+インストーラーは、公開済みのSHA-256チェックサムでダウンロードしたアーカイブを検証してから、`lab-userctl`を`/usr/local/bin`へインストールします。
 
 ## ビルド
 
