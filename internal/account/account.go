@@ -96,6 +96,10 @@ func (u *User) HasSudo() (bool, error) {
 }
 
 func Create(username string, password []byte) (*User, error) {
+	if err := ValidatePassword(password); err != nil {
+		return nil, err
+	}
+
 	err := exec.Command(
 		"useradd",
 		"--create-home",

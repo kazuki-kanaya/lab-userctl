@@ -50,13 +50,21 @@ func (u *User) PasswordStatus() (PasswordStatus, error) {
 	}
 }
 
-func (u *User) SetPassword(password []byte) error {
+func ValidatePassword(password []byte) error {
 	if len(password) == 0 {
 		return fmt.Errorf("password must not be empty")
 	}
 
 	if bytes.ContainsAny(password, "\r\n") {
 		return fmt.Errorf("password must not contain a line break")
+	}
+
+	return nil
+}
+
+func (u *User) SetPassword(password []byte) error {
+	if err := ValidatePassword(password); err != nil {
+		return err
 	}
 
 	input := make([]byte, 0, len(u.Username)+1+len(password)+1)
