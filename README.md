@@ -4,7 +4,17 @@
 
 [日本語版](README.ja.md)
 
-A simple interactive CLI for provisioning local Linux users on Ubuntu servers.
+A simple interactive CLI for setting up Linux users on Ubuntu servers, including sudo access and SSH public keys.
+
+## Install
+
+Install the latest release for Ubuntu:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kazuki-kanaya/lab-userctl/main/scripts/install.sh | sh
+```
+
+The installer verifies the downloaded archive against its published SHA-256 checksum and installs `lab-userctl` to `/usr/local/bin`.
 
 ## Why
 
@@ -31,22 +41,11 @@ The command interactively asks for a username, a password when creating a user, 
 
 Only SSH public keys are accepted. Never enter a private key; private key input is rejected.
 
-## Install
-
-Install the latest Linux release:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/kazuki-kanaya/lab-userctl/main/scripts/install.sh | sh
-```
-
-The installer verifies the downloaded archive against its published SHA-256 checksum and installs `lab-userctl` to `/usr/local/bin`.
-
-## Build
-
-```bash
-goenv install 1.26.5
-goenv use 1.26.5
-go build -o lab-userctl .
-```
-
 This tool changes system accounts. Test it on a disposable Ubuntu VM or test account before using it on a production server.
+
+## Tech stack
+
+- Go
+- Cobra
+- GoReleaser
+- GitHub Actions
