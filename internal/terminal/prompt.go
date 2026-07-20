@@ -39,3 +39,29 @@ func (p *Prompter) readLine() (string, error) {
 	}
 	return strings.TrimRight(line, "\r\n"), nil
 }
+
+func (p *Prompter) Confirm(question string, defaultYes bool) (bool, error) {
+	choice := "[y/N]"
+	if defaultYes {
+		choice = "[Y/n]"
+	}
+
+	for {
+		answer, err := p.Ask(fmt.Sprintf("%s %s:", question, choice))
+
+		if err != nil {
+			return false, err
+		}
+
+		switch strings.ToLower(strings.TrimSpace(answer)) {
+		case "":
+			return defaultYes, nil
+		case "y", "yes":
+			return true, nil
+		case "n", "no":
+			return false, nil
+		default:
+			fmt.Fprintln(os.Stdout, "Please enter yes or no.")
+		}
+	}
+}
